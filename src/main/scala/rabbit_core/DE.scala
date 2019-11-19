@@ -50,22 +50,32 @@ class DE extends Module {
   // デフォルトの挙動をNOPにしておく
   val op = NOP; io.alith := op.alith.id; io.pc_w := op.pc_w; io.rf_w := op.rf_w; io.mem_w := op.mem_w; source1_sel := op.rs1.id; source2_sel := op.rs2.id
 
+  def conOp(op: OP): Unit = {
+    io.alith := op.alith.id
+    io.pc_w := op.pc_w
+    io.rf_w := op.rf_w
+    io.mem_w := op.mem_w
+    source1_sel := op.rs1.id
+    source2_sel := op.rs2.id
+  }
   //  ここScalaのfor分でスマートにかける気がするがswitchの仕様を調べないとわからず
+  // -> switchの中ではisしか使えないみたいなので、forで展開するのは無理そう
+  // -> MuxCaseはちょっと違うし、isマクロを弄るしかないのかな？やりたくねぇ……
   switch(inst.op) {
-    is( ADD.op) { val op =  ADD; io.alith := op.alith.id; io.pc_w := op.pc_w; io.rf_w := op.rf_w; io.mem_w := op.mem_w; source1_sel := op.rs1.id; source2_sel := op.rs2.id }
-    is( SUB.op) { val op =  SUB; io.alith := op.alith.id; io.pc_w := op.pc_w; io.rf_w := op.rf_w; io.mem_w := op.mem_w; source1_sel := op.rs1.id; source2_sel := op.rs2.id }
-    is( AND.op) { val op =  AND; io.alith := op.alith.id; io.pc_w := op.pc_w; io.rf_w := op.rf_w; io.mem_w := op.mem_w; source1_sel := op.rs1.id; source2_sel := op.rs2.id }
-    is(  OR.op) { val op =   OR; io.alith := op.alith.id; io.pc_w := op.pc_w; io.rf_w := op.rf_w; io.mem_w := op.mem_w; source1_sel := op.rs1.id; source2_sel := op.rs2.id }
-    is(ADDI.op) { val op = ADDI; io.alith := op.alith.id; io.pc_w := op.pc_w; io.rf_w := op.rf_w; io.mem_w := op.mem_w; source1_sel := op.rs1.id; source2_sel := op.rs2.id }
-    is(SUBI.op) { val op = SUBI; io.alith := op.alith.id; io.pc_w := op.pc_w; io.rf_w := op.rf_w; io.mem_w := op.mem_w; source1_sel := op.rs1.id; source2_sel := op.rs2.id }
-    is(INCR.op) { val op = INCR; io.alith := op.alith.id; io.pc_w := op.pc_w; io.rf_w := op.rf_w; io.mem_w := op.mem_w; source1_sel := op.rs1.id; source2_sel := op.rs2.id }
-    is(DECR.op) { val op = DECR; io.alith := op.alith.id; io.pc_w := op.pc_w; io.rf_w := op.rf_w; io.mem_w := op.mem_w; source1_sel := op.rs1.id; source2_sel := op.rs2.id }
-    is( LDI.op) { val op =  LDI; io.alith := op.alith.id; io.pc_w := op.pc_w; io.rf_w := op.rf_w; io.mem_w := op.mem_w; source1_sel := op.rs1.id; source2_sel := op.rs2.id }
-    is(  LD.op) { val op =   LD; io.alith := op.alith.id; io.pc_w := op.pc_w; io.rf_w := op.rf_w; io.mem_w := op.mem_w; source1_sel := op.rs1.id; source2_sel := op.rs2.id }
-    is(  ST.op) { val op =   ST; io.alith := op.alith.id; io.pc_w := op.pc_w; io.rf_w := op.rf_w; io.mem_w := op.mem_w; source1_sel := op.rs1.id; source2_sel := op.rs2.id }
-    is( BEQ.op) { val op =  BEQ; io.alith := op.alith.id; io.pc_w := op.pc_w; io.rf_w := op.rf_w; io.mem_w := op.mem_w; source1_sel := op.rs1.id; source2_sel := op.rs2.id }
-    is( BGT.op) { val op =  BGT; io.alith := op.alith.id; io.pc_w := op.pc_w; io.rf_w := op.rf_w; io.mem_w := op.mem_w; source1_sel := op.rs1.id; source2_sel := op.rs2.id }
-    is(JUMP.op) { val op = JUMP; io.alith := op.alith.id; io.pc_w := op.pc_w; io.rf_w := op.rf_w; io.mem_w := op.mem_w; source1_sel := op.rs1.id; source2_sel := op.rs2.id }
+    is( ADD.op) { val op =  ADD; conOp(op) }
+    is( SUB.op) { val op =  SUB; conOp(op) }
+    is( AND.op) { val op =  AND; conOp(op) }
+    is(  OR.op) { val op =   OR; conOp(op) }
+    is(ADDI.op) { val op = ADDI; conOp(op) }
+    is(SUBI.op) { val op = SUBI; conOp(op) }
+    is(INCR.op) { val op = INCR; conOp(op) }
+    is(DECR.op) { val op = DECR; conOp(op) }
+    is( LDI.op) { val op =  LDI; conOp(op) }
+    is(  LD.op) { val op =   LD; conOp(op) }
+    is(  ST.op) { val op =   ST; conOp(op) }
+    is( BEQ.op) { val op =  BEQ; conOp(op) }
+    is( BGT.op) { val op =  BGT; conOp(op) }
+    is(JUMP.op) { val op = JUMP; conOp(op) }
   }
 }
 
