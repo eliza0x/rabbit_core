@@ -1,37 +1,13 @@
-// See README.md for license details.
-
-package rabbit_core
-
-package gcd.test
+package rabbit_core.test
 
 import chisel3.iotesters.{ChiselFlatSpec, Driver, PeekPokeTester}
+import rabbit_core.IF
 
-class IFUnitTester(f: IF) extends PeekPokeTester(f) {
+class IFUnitTester(m: IF) extends PeekPokeTester(m) {
   for(i <- 0 to 10) {
-    expect(f.io.pc, i)
+    expect(m.io.pc, i)
     step(1)
   }
 }
 
-/**
-  * This is a trivial example of how to run this Specification
-  * From within sbt use:
-  * {{{
-  * testOnly example.test.GCDTester
-  * }}}
-  * From a terminal shell use:
-  * {{{
-  * sbt 'testOnly example.test.GCDTester'
-  * }}}
-  */
-class IFTester extends ChiselFlatSpec {
-  // private val backendNames = Array("firrtl", "verilator")
-  private val backendNames = Array("firrtl")
-  for ( backendName <- backendNames ) {
-    "IF" should s"with $backendName" in {
-      Driver(() => new IF, backendName) {
-        c: IF => new IFUnitTester(c)
-      } should be (true)
-    }
-  }
-}
+
