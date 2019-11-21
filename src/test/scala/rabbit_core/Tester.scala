@@ -13,6 +13,7 @@ import chisel3.iotesters._
   * sbt 'testOnly example.test.GCDTester'
   * }}}
   */
+
 class Tester extends ChiselFlatSpec {
   // private val backendNames = Array("firrtl", "verilator")
   private val backendNames = Array("firrtl")
@@ -23,8 +24,8 @@ class Tester extends ChiselFlatSpec {
       } should be(true)
     }
     "DE" should s"nothing to do with $backendName" in {
-      Driver(() => (new DE(classOf[RegFile])), backendName) {
-        m: DE[RegFile] => new DEUnitTester(m)
+      Driver(() => (new DE(classOf[ConstRF])), backendName) {
+        m: DE[ConstRF] => new DEUnitTester(m)
       } should be(true)
     }
   }
