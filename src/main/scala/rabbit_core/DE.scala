@@ -36,10 +36,13 @@ class RegFile extends HasIO[RegFileIO] {
 // RegFileIO IO Interfaceを備えたモジュールを受け取る
 // -> このことでテストを書くときに外部からいい感じのRegFileを渡すことができる
 // -> 例えば定数を返すRegFile等
-class DE[RF <: HasIO[RegFileIO]](val RegFile: Class[RF]) extends Module {
+class DE[M <: HasIO[RegFileIO]](RF: Class[M]) extends Module {
   val io = IO(new Bundle {
     val inst = Input(UInt(XLEN.W))
     val pc = Input(UInt(XLEN.W))
+
+    val write_rf_addr = Input(UInt(XLEN.W))
+    val write_rf_data = Input(UInt(XLEN.W))
 
     val pc_w = Output(Bool())
     val rf_w = Output(Bool())
@@ -50,14 +53,11 @@ class DE[RF <: HasIO[RegFileIO]](val RegFile: Class[RF]) extends Module {
     val rs = Output(UInt(XLEN.W))
     val source1 = Output(UInt(XLEN.W))
     val source2 = Output(UInt(XLEN.W))
-
-    val write_rf_addr = Input(UInt(XLEN.W))
-    val write_rf_data = Input(UInt(XLEN.W))
   })
   val inst = Wire(new Inst)
   inst := io.inst.asTypeOf(new Inst)
 
-  val rf = Module(new RegFile)
+  val rf = Module(RF.newInstance())
   val rd = Wire(UInt(XLEN.W))
   val rs = Wire(UInt(XLEN.W))
   rf.io.read_addr1 := inst.rd
@@ -100,21 +100,21 @@ class DE[RF <: HasIO[RegFileIO]](val RegFile: Class[RF]) extends Module {
   //  ここScalaのfor分でスマートにかける気がするがswitchの仕様を調べないとわからず
   // -> switchの中ではisしか使えないみたいなので、forで展開するのは無理そう
   // -> MuxCaseはちょっと違うし、isマクロを弄るしかないのかな？やりたくねぇ……
-  when(inst.op === ADD.op) { val op =  ADD; conOp(op) }
-  .elsewhen(inst.op === SUB.op) { val op =  SUB; conOp(op) }
-  .elsewhen(inst.op === AND.op) { val op =  AND; conOp(op) }
-  .elsewhen(inst.op ===  OR.op) { val op =   OR; conOp(op) }
-  .elsewhen(inst.op ===ADDI.op) { val op = ADDI; conOp(op) }
-  .elsewhen(inst.op ===SUBI.op) { val op = SUBI; conOp(op) }
-  .elsewhen(inst.op ===INCR.op) { val op = INCR; conOp(op) }
-  .elsewhen(inst.op ===DECR.op) { val op = DECR; conOp(op) }
-  .elsewhen(inst.op === LDI.op) { val op =  LDI; conOp(op) }
-  .elsewhen(inst.op ===  LD.op) { val op =   LD; conOp(op) }
-  .elsewhen(inst.op ===  ST.op) { val op =   ST; conOp(op) }
-  .elsewhen(inst.op === BEQ.op) { val op =  BEQ; conOp(op) }
-  .elsewhen(inst.op === BGT.op) { val op =  BGT; conOp(op) }
-  .elsewhen(inst.op ===JUMP.op) { val op = JUMP; conOp(op) }
-  .otherwise { val op = NOP; conOp(op) }
+  when     (inst.op ===  ADD.op) { val op =  ADD; conOp(op) }
+  .elsewhen(inst.op ===  SUB.op) { val op =  SUB; conOp(op) }
+  .elsewhen(inst.op ===  AND.op) { val op =  AND; conOp(op) }
+  .elsewhen(inst.op ===   OR.op) { val op =   OR; conOp(op) }
+  .elsewhen(inst.op === ADDI.op) { val op = ADDI; conOp(op) }
+  .elsewhen(inst.op === SUBI.op) { val op = SUBI; conOp(op) }
+  .elsewhen(inst.op === INCR.op) { val op = INCR; conOp(op) }
+  .elsewhen(inst.op === DECR.op) { val op = DECR; conOp(op) }
+  .elsewhen(inst.op ===  LDI.op) { val op =  LDI; conOp(op) }
+  .elsewhen(inst.op ===   LD.op) { val op =   LD; conOp(op) }
+  .elsewhen(inst.op ===   ST.op) { val op =   ST; conOp(op) }
+  .elsewhen(inst.op ===  BEQ.op) { val op =  BEQ; conOp(op) }
+  .elsewhen(inst.op ===  BGT.op) { val op =  BGT; conOp(op) }
+  .elsewhen(inst.op === JUMP.op) { val op = JUMP; conOp(op) }
+  .otherwise                     { val op = NOP;  conOp(op) }
 }
 
 class Inst extends Bundle {
