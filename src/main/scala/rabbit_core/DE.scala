@@ -8,7 +8,7 @@ object Main extends App {
   chisel3.Driver.execute(Array[String](), () => new DE(classOf[RegFile]))
 }
 
-// RegFileと同じIOをテスト用モジュールに提供するためのモジュール
+// RegFileのIO Interface
 class RegFileIO extends Bundle {
   val write_addr = Input(UInt(log2Ceil(XLEN).W))
   val write_data = Input(UInt(XLEN.W))
@@ -18,7 +18,7 @@ class RegFileIO extends Bundle {
   val out2 = Output(UInt(XLEN.W))
 }
 
-// RegFileと同じ=> インタフェースを備えたテスト用モジュールを制作するためのtrait
+// M型のIO Interfaceを備えたModuleを定義するためのモジュール
 trait HasIO[M <: Record] extends Module {
   val io: M
 }
@@ -33,6 +33,9 @@ class RegFile extends HasIO[RegFileIO] {
   io.out2 := reg_file(io.read_addr2)
 }
 
+// RegFileIO IO Interfaceを備えたモジュールを受け取る
+// -> このことでテストを書くときに外部からいい感じのRegFileを渡すことができる
+// -> 例えば定数を返すRegFile等
 class DE[RF <: HasIO[RegFileIO]](val RegFile: Class[RF]) extends Module {
   val io = IO(new Bundle {
     val inst = Input(UInt(XLEN.W))
