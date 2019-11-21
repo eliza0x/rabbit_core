@@ -1,7 +1,6 @@
-package rabbit_core.test
+package rabbit_core
 
 import chisel3.iotesters._
-import rabbit_core.{DE, IF}
 
 /**
   * This is a trivial example of how to run this Specification
@@ -24,8 +23,8 @@ class Tester extends ChiselFlatSpec {
       } should be(true)
     }
     "DE" should s"nothing to do with $backendName" in {
-      Driver(() => new DE, backendName) {
-        m: DE => new DEUnitTester(m)
+      Driver(() => (new DE(classOf[RegFile])), backendName) {
+        m: DE[RegFile] => new DEUnitTester(m)
       } should be(true)
     }
   }

@@ -1,4 +1,4 @@
-package rabbit_core.test
+package rabbit_core
 
 import chisel3.iotesters.{ChiselFlatSpec, Driver, PeekPokeTester}
 import rabbit_core.IF
