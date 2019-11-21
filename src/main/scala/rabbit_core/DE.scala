@@ -100,21 +100,11 @@ class DE[M <: HasIO[RegFileIO]](RF: Class[M]) extends Module {
   //  ここScalaのfor分でスマートにかける気がするがswitchの仕様を調べないとわからず
   // -> switchの中ではisしか使えないみたいなので、forで展開するのは無理そう
   // -> MuxCaseはちょっと違うし、isマクロを弄るしかないのかな？やりたくねぇ……
-  when     (inst.op ===  ADD.op) { val op =  ADD; conOp(op) }
-  .elsewhen(inst.op ===  SUB.op) { val op =  SUB; conOp(op) }
-  .elsewhen(inst.op ===  AND.op) { val op =  AND; conOp(op) }
-  .elsewhen(inst.op ===   OR.op) { val op =   OR; conOp(op) }
-  .elsewhen(inst.op === ADDI.op) { val op = ADDI; conOp(op) }
-  .elsewhen(inst.op === SUBI.op) { val op = SUBI; conOp(op) }
-  .elsewhen(inst.op === INCR.op) { val op = INCR; conOp(op) }
-  .elsewhen(inst.op === DECR.op) { val op = DECR; conOp(op) }
-  .elsewhen(inst.op ===  LDI.op) { val op =  LDI; conOp(op) }
-  .elsewhen(inst.op ===   LD.op) { val op =   LD; conOp(op) }
-  .elsewhen(inst.op ===   ST.op) { val op =   ST; conOp(op) }
-  .elsewhen(inst.op ===  BEQ.op) { val op =  BEQ; conOp(op) }
-  .elsewhen(inst.op ===  BGT.op) { val op =  BGT; conOp(op) }
-  .elsewhen(inst.op === JUMP.op) { val op = JUMP; conOp(op) }
-  .otherwise                     { val op = NOP;  conOp(op) }
+  // -> when節を使ったら畳み込みで書けた
+  val ops = List(ADD, SUB, AND, OR, ADDI, SUBI, INCR, DECR, LDI, LDI, LD, ST, BEQ, BGT, JUMP)
+  ops.foldLeft(when(NOP.op === inst.op) { conOp(NOP) })((t, op) =>
+    t.elsewhen(op.op === inst.op) { conOp(op) })
+    .otherwise(conOp(NOP))
 }
 
 class Inst extends Bundle {
