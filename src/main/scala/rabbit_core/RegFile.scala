@@ -11,6 +11,7 @@ class RegFile extends HasIO[RegFileIO] {
   when (io.write_addr =/= 0.U) {
     reg_file(io.write_addr) := io.write_data
   }
+  reg_file(0) := 0.U
   io.out1 := reg_file(io.read_addr1)
   io.out2 := reg_file(io.read_addr2)
 }
