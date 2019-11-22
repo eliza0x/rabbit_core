@@ -24,6 +24,11 @@ class Tester extends ChiselFlatSpec {
         m: IF[TestSequentialAccessIM] => new IFUnitTester(m)
       } should be(true)
     }
+    "IF" should s"jump and branch with $backendName" in {
+      Driver(() => new IF(classOf[TestSequentialAccessIM]), backendName) {
+        m: IF[TestSequentialAccessIM] => new IFJumpUnitTester(m)
+      } should be(true)
+    }
     "DE" should s"nothing to do with $backendName" in {
       Driver(() => (new DE(classOf[ConstRF])), backendName) {
         m: DE[ConstRF] => new DEUnitTester(m)
