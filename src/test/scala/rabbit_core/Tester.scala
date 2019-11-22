@@ -1,7 +1,7 @@
 package rabbit_core
 
 import chisel3.iotesters._
-import rabbit_core.stab_modules.ConstRF
+import rabbit_core.stab_modules.{ConstRF, TestSequentialAccessIM}
 
 /**
   * This is a trivial example of how to run this Specification
@@ -20,8 +20,8 @@ class Tester extends ChiselFlatSpec {
   private val backendNames = Array("firrtl")
   for (backendName <- backendNames) {
     "IF" should s"count up pc with $backendName" in {
-      Driver(() => new IF, backendName) {
-        m: IF => new IFUnitTester(m)
+      Driver(() => new IF(classOf[TestSequentialAccessIM]), backendName) {
+        m: IF[TestSequentialAccessIM] => new IFUnitTester(m)
       } should be(true)
     }
     "DE" should s"nothing to do with $backendName" in {

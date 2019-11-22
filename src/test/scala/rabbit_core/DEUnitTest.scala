@@ -3,6 +3,7 @@ package rabbit_core
 import chisel3.iotesters._
 import Util._
 import rabbit_core.stab_modules.ConstRF
+import scala.language.reflectiveCalls
 
 class DEUnitTester(m: DE[ConstRF]) extends PeekPokeTester(m) {
   poke(m.io.pc, 0)
