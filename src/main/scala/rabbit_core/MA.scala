@@ -2,13 +2,14 @@ package rabbit_core
 
 import chisel3._
 import rabbit_core.Properties._
+import scala.language.reflectiveCalls
 
 class MA extends Module {
   val io = IO(new Bundle {
     val mem_w = Input(Bool())
     val mem_r = Input(Bool())
-    val rd = Output(UInt(XLEN.W))
-    val alu_out = Output(UInt(XLEN.W))
+    val rd = Input(UInt(XLEN.W))
+    val alu_out = Input(UInt(XLEN.W))
     val mem_out = Output(UInt(XLEN.W))
   })
   val mem = SyncReadMem(Math.pow(2, XLEN).toInt, UInt(XLEN.W))

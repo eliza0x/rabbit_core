@@ -29,5 +29,15 @@ class Tester extends ChiselFlatSpec {
         m: DE[ConstRF] => new DEUnitTester(m)
       } should be(true)
     }
+    "EX" should s"10 + 20 = 30 with $backendName" in {
+      Driver(() => (new EX(classOf[ALU])), backendName) {
+        m: EX[ALU] => new EXUnitTest(m)
+      } should be(true)
+    }
+    "MA" should s"load and store with $backendName" in {
+      Driver(() => (new MA()), backendName) {
+        m: MA => new MAUnitTest(m)
+      } should be(true)
+    }
   }
 }
