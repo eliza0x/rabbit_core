@@ -72,6 +72,15 @@ class DE[M <: HasIO[RegFileIO]](RF: Class[M]) extends Module {
     source2_sel := op.rs2.id
     io.cond_type := op.cond_type.map(_.id).getOrElse(DontCare)
   }
+  def conDontCare(): Unit = {
+    io.alith := DontCare
+    io.pc_w := DontCare
+    io.rf_w := DontCare
+    io.mem_w := DontCare
+    source1_sel := DontCare
+    source2_sel := DontCare
+    io.cond_type := DontCare
+  }
 
   //  ここScalaのfor分でスマートにかける気がするがswitchの仕様を調べないとわからず
   // -> switchの中ではisしか使えないみたいなので、forで展開するのは無理そう
@@ -80,7 +89,7 @@ class DE[M <: HasIO[RegFileIO]](RF: Class[M]) extends Module {
   val ops = List(ADD, SUB, AND, OR, ADDI, SUBI, INCR, DECR, LDI, LDI, LD, ST, BEQ, BGT, JUMP)
   ops.foldLeft(when(NOP.op === inst.op) { conOp(NOP) })((t, op) =>
     t.elsewhen(op.op === inst.op) { conOp(op) })
-    .otherwise(conOp(NOP))
+    .otherwise(conDontCare())
 }
 
 // ALUにどの値を流すか決定するのに使用

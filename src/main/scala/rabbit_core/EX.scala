@@ -23,7 +23,7 @@ class EX[M <: HasIO[ALUIO]](ALU: Class[M]) extends Module {
   alu.io.source2 := io.source2
   io.alu_out := alu.io.alu_out
 
-  io.cond_valid := MuxLookup(io.cond_type, false.B, Array(
+  io.cond_valid := MuxLookup(io.cond_type, DontCare, Array(
     EQ.id -> io.source1.===(io.source2),
     GT.id -> io.source1.>(io.source2)
   ))
