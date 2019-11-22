@@ -48,6 +48,7 @@ libraryDependencies ++= Seq("chisel3","chisel-iotesters").map {
 // libraryDependencies += "org.typelevel" %% "cats-core" % "2.0.0"
 
 scalacOptions ++= scalacOptionsVersion(scalaVersion.value)
+scalacOptions ++= Seq("-deprecation", "-feature")
 
 javacOptions ++= javacOptionsVersion(scalaVersion.value)
 

@@ -1,8 +1,9 @@
-package rabbit_core
+package rabbit_core.stab_modules
 
 import chisel3._
-import chisel3.util._
-import Properties._
+import rabbit_core.`trait`.HasIO
+import rabbit_core.model.RegFileIO
+import rabbit_core.Properties._
 
 // 適当な定数を返すRegFile
 class ConstRF extends HasIO[RegFileIO] {

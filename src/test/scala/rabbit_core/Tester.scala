@@ -1,6 +1,7 @@
 package rabbit_core
 
 import chisel3.iotesters._
+import rabbit_core.stab_modules.ConstRF
 
 /**
   * This is a trivial example of how to run this Specification

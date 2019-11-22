@@ -1,41 +1,15 @@
 package rabbit_core
 
-import Properties._
 import chisel3._
 import chisel3.util._
-
-object Main extends App {
-  chisel3.Driver.execute(Array[String](), () => new DE(classOf[RegFile]))
-}
-
-// RegFileのIO Interface
-class RegFileIO extends Bundle {
-  val write_addr = Input(UInt(log2Ceil(XLEN).W))
-  val write_data = Input(UInt(XLEN.W))
-  val read_addr1 = Input(UInt(log2Ceil(RF_CNT).W))
-  val read_addr2 = Input(UInt(log2Ceil(RF_CNT).W))
-  val out1 = Output(UInt(XLEN.W))
-  val out2 = Output(UInt(XLEN.W))
-}
-
-// M型のIO Interfaceを備えたModuleを定義するためのモジュール
-trait HasIO[M <: Record] extends Module {
-  val io: M
-}
-
-class RegFile extends HasIO[RegFileIO] {
-  val io: RegFileIO = IO(new RegFileIO)
-  val reg_file = Reg(Vec(RF_CNT, UInt(XLEN.W)))
-  when (io.write_addr =/= 0.U) {
-    reg_file(io.write_addr) := io.write_data
-  }
-  io.out1 := reg_file(io.read_addr1)
-  io.out2 := reg_file(io.read_addr2)
-}
+import rabbit_core.Properties._
+import rabbit_core.`trait`._
+import rabbit_core.model._
+import scala.language.reflectiveCalls // どうもchiselのModuleのio周りで使ってるっぽい、要調査
 
 // RegFileIO IO Interfaceを備えたモジュールを受け取る
 // -> このことでテストを書くときに外部からいい感じのRegFileを渡すことができる
-// -> 例えば定数を返すRegFile等
+// -> 例えば定数を返すRegFileやのぞみの初期値が入ったRegFile等
 class DE[M <: HasIO[RegFileIO]](RF: Class[M]) extends Module {
   val io = IO(new Bundle {
     val inst = Input(UInt(XLEN.W))
@@ -105,13 +79,6 @@ class DE[M <: HasIO[RegFileIO]](RF: Class[M]) extends Module {
   ops.foldLeft(when(NOP.op === inst.op) { conOp(NOP) })((t, op) =>
     t.elsewhen(op.op === inst.op) { conOp(op) })
     .otherwise(conOp(NOP))
-}
-
-class Inst extends Bundle {
-  val op = UInt(4.W)
-  val rd = UInt(3.W)
-  val rs = UInt(3.W)
-  val disp6 = UInt(6.W)
 }
 
 // ALUにどの値を流すか決定するのに使用
