@@ -14,5 +14,4 @@ class ALU extends HasIO[ALUIO] {
     AlithAND.id -> io.source1.&(io.source2),
     AlithOR.id  -> io.source1.|(io.source2)
   ))
-
 }
