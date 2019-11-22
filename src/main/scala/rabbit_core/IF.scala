@@ -20,6 +20,5 @@ class IF[M <: HasIO[InstMemoryIO]](IM: Class[M]) extends Module {
   io.inst  := mem.io.inst
 
   pc := Mux(io.pc_w, io.alu_out, pc + 1.U)
-  printf("io.pc: %d\n", io.pc)
   io.pc := pc
 }
