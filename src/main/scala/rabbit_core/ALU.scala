@@ -8,10 +8,10 @@ import rabbit_core.model.ALUIO
 
 class ALU extends HasIO[ALUIO] {
   val io = IO(new ALUIO)
-  io.alu_out := MuxLookup(io.alith, 0.U, Array(
-    AlithADD.id -> io.source1.+(io.source2),
-    AlithSUB.id -> io.source1.-(io.source2),
-    AlithAND.id -> io.source1.&(io.source2),
-    AlithOR.id  -> io.source1.|(io.source2)
+  io.alu_out := MuxLookup(io.alu_op, 0.U, Array(
+    ALUADD.id -> io.source1.+(io.source2),
+    ALUSUB.id -> io.source1.-(io.source2),
+    ALUAND.id -> io.source1.&(io.source2),
+    ALUOR.id  -> io.source1.|(io.source2)
   ))
 }
