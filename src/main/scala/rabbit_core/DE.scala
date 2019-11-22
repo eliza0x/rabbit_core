@@ -21,7 +21,6 @@ class DE[M <: HasIO[RegFileIO]](RF: Class[M]) extends Module {
     val alu_out = Input(UInt(XLEN.W))
     val mem_out = Input(UInt(XLEN.W))
 
-    val pc_w = Output(Bool())
     val rf_w = Output(Bool())
     val mem_w = Output(Bool())
     val mem_r = Output(Bool())
@@ -31,7 +30,7 @@ class DE[M <: HasIO[RegFileIO]](RF: Class[M]) extends Module {
     val rs = Output(UInt(XLEN.W))
     val source1 = Output(UInt(XLEN.W))
     val source2 = Output(UInt(XLEN.W))
-    val cond_type = Output(UInt(1.W))
+    val cond_type = Output(UInt(2.W))
   })
   val inst = Wire(new Inst)
   inst := io.inst.asTypeOf(new Inst)
@@ -69,17 +68,15 @@ class DE[M <: HasIO[RegFileIO]](RF: Class[M]) extends Module {
 
   def conOp(op: OP): Unit = {
     io.alith := op.alu_op.id
-    io.pc_w := op.pc_w
     io.rf_w := op.rf_w
     io.mem_w := op.mem_w
     io.mem_r := op.mem_r
     source1_sel := op.rs1.id
     source2_sel := op.rs2.id
-    io.cond_type := op.cond_type.map(_.id).getOrElse(DontCare)
+    io.cond_type := op.cond_type.id
   }
   def conDontCare(): Unit = {
     io.alith := DontCare
-    io.pc_w := DontCare
     io.rf_w := DontCare
     io.mem_w := DontCare
     io.mem_r := DontCare
@@ -125,26 +122,28 @@ sealed trait OP {
   val rf_w: Bool
   val mem_w: Bool
   val mem_r: Bool
-  val pc_w: Bool
-  val cond_type: Option[CondType]
+  val cond_type: CondType
 }
 
-object  ADD extends OP { val op = "b0001".U; val alu_op = ALUADD; val rs1 = RD;   val rs2 = RS;    val rf_w = true.B;  val mem_w = false.B; val mem_r = false.B; val pc_w = false.B; val cond_type = None }
-object  SUB extends OP { val op = "b0010".U; val alu_op = ALUSUB; val rs1 = RD;   val rs2 = RS;    val rf_w = true.B;  val mem_w = false.B; val mem_r = false.B; val pc_w = false.B; val cond_type = None }
-object  AND extends OP { val op = "b0011".U; val alu_op = ALUAND; val rs1 = RD;   val rs2 = RS;    val rf_w = true.B;  val mem_w = false.B; val mem_r = false.B; val pc_w = false.B; val cond_type = None }
-object   OR extends OP { val op = "b0100".U; val alu_op = ALUOR;  val rs1 = RD;   val rs2 = RS;    val rf_w = true.B;  val mem_w = false.B; val mem_r = false.B; val pc_w = false.B; val cond_type = None }
-object ADDI extends OP { val op = "b0101".U; val alu_op = ALUADD; val rs1 = RD;   val rs2 = Disp6; val rf_w = true.B;  val mem_w = false.B; val mem_r = false.B; val pc_w = false.B; val cond_type = None }
-object SUBI extends OP { val op = "b0110".U; val alu_op = ALUSUB; val rs1 = RD;   val rs2 = Disp6; val rf_w = true.B;  val mem_w = false.B; val mem_r = false.B; val pc_w = false.B; val cond_type = None }
-object INCR extends OP { val op = "b0111".U; val alu_op = ALUADD; val rs1 = RD;   val rs2 = One;   val rf_w = true.B;  val mem_w = false.B; val mem_r = false.B; val pc_w = false.B; val cond_type = None }
-object DECR extends OP { val op = "b1000".U; val alu_op = ALUSUB; val rs1 = RD;   val rs2 = One;   val rf_w = true.B;  val mem_w = false.B; val mem_r = false.B; val pc_w = false.B; val cond_type = None }
-object  LDI extends OP { val op = "b1001".U; val alu_op = ALUADD; val rs1 = RD;   val rs2 = Imm9;  val rf_w = true.B;  val mem_w = false.B; val mem_r = false.B; val pc_w = false.B; val cond_type = None }
-object   LD extends OP { val op = "b1010".U; val alu_op = ALUADD; val rs1 = RD;   val rs2 = Disp6; val rf_w = true.B;  val mem_w = false.B; val mem_r = true.B; val pc_w = false.B; val cond_type = None }
-object   ST extends OP { val op = "b1011".U; val alu_op = ALUADD; val rs1 = RD;   val rs2 = Disp6; val rf_w = false.B; val mem_w = true.B;  val mem_r = false.B; val pc_w = false.B; val cond_type = None }
-object  BEQ extends OP { val op = "b1100".U; val alu_op = ALUADD; val rs1 = PC;   val rs2 = Disp6; val rf_w = false.B; val mem_w = false.B; val mem_r = false.B; val pc_w = true.B ; val cond_type = Some(EQ) }
-object  BGT extends OP { val op = "b1101".U; val alu_op = ALUADD; val rs1 = PC;   val rs2 = Disp6; val rf_w = false.B; val mem_w = false.B; val mem_r = false.B; val pc_w = true.B ; val cond_type = Some(GT) }
-object JUMP extends OP { val op = "b1110".U; val alu_op = ALUADD; val rs1 = Zero; val rs2 = Imm9;  val rf_w = false.B; val mem_w = false.B; val mem_r = false.B; val pc_w = true.B ; val cond_type = None }
-object  NOP extends OP { val op = "b0000".U; val alu_op = ALUADD; val rs1 = Zero; val rs2 = Zero;  val rf_w = false.B; val mem_w = false.B; val mem_r = false.B; val pc_w = false.B; val cond_type = None }
+object  ADD extends OP { val op = "b0001".U; val alu_op = ALUADD; val rs1 = RD;   val rs2 = RS;    val rf_w = true.B;  val mem_w = false.B; val mem_r = false.B; val has_cond = false.B; val cond_type = N }
+object  SUB extends OP { val op = "b0010".U; val alu_op = ALUSUB; val rs1 = RD;   val rs2 = RS;    val rf_w = true.B;  val mem_w = false.B; val mem_r = false.B; val has_cond = false.B; val cond_type = N }
+object  AND extends OP { val op = "b0011".U; val alu_op = ALUAND; val rs1 = RD;   val rs2 = RS;    val rf_w = true.B;  val mem_w = false.B; val mem_r = false.B; val has_cond = false.B; val cond_type = N }
+object   OR extends OP { val op = "b0100".U; val alu_op = ALUOR;  val rs1 = RD;   val rs2 = RS;    val rf_w = true.B;  val mem_w = false.B; val mem_r = false.B; val has_cond = false.B; val cond_type = N }
+object ADDI extends OP { val op = "b0101".U; val alu_op = ALUADD; val rs1 = RD;   val rs2 = Disp6; val rf_w = true.B;  val mem_w = false.B; val mem_r = false.B; val has_cond = false.B; val cond_type = N }
+object SUBI extends OP { val op = "b0110".U; val alu_op = ALUSUB; val rs1 = RD;   val rs2 = Disp6; val rf_w = true.B;  val mem_w = false.B; val mem_r = false.B; val has_cond = false.B; val cond_type = N }
+object INCR extends OP { val op = "b0111".U; val alu_op = ALUADD; val rs1 = RD;   val rs2 = One;   val rf_w = true.B;  val mem_w = false.B; val mem_r = false.B; val has_cond = false.B; val cond_type = N }
+object DECR extends OP { val op = "b1000".U; val alu_op = ALUSUB; val rs1 = RD;   val rs2 = One;   val rf_w = true.B;  val mem_w = false.B; val mem_r = false.B; val has_cond = false.B; val cond_type = N }
+object  LDI extends OP { val op = "b1001".U; val alu_op = ALUADD; val rs1 = RD;   val rs2 = Imm9;  val rf_w = true.B;  val mem_w = false.B; val mem_r = false.B; val has_cond = false.B; val cond_type = N }
+object   LD extends OP { val op = "b1010".U; val alu_op = ALUADD; val rs1 = RD;   val rs2 = Disp6; val rf_w = true.B;  val mem_w = false.B; val mem_r = true.B;  val has_cond = false.B; val cond_type = N }
+object   ST extends OP { val op = "b1011".U; val alu_op = ALUADD; val rs1 = RD;   val rs2 = Disp6; val rf_w = false.B; val mem_w = true.B;  val mem_r = false.B; val has_cond = false.B; val cond_type = N }
+object  BEQ extends OP { val op = "b1100".U; val alu_op = ALUADD; val rs1 = PC;   val rs2 = Disp6; val rf_w = false.B; val mem_w = false.B; val mem_r = false.B; val has_cond = true.B;  val cond_type = EQ }
+object  BGT extends OP { val op = "b1101".U; val alu_op = ALUADD; val rs1 = PC;   val rs2 = Disp6; val rf_w = false.B; val mem_w = false.B; val mem_r = false.B; val has_cond = true.B;  val cond_type = GT }
+object JUMP extends OP { val op = "b1110".U; val alu_op = ALUADD; val rs1 = Zero; val rs2 = Imm9;  val rf_w = false.B; val mem_w = false.B; val mem_r = false.B; val has_cond = false.B; val cond_type = J }
+object  NOP extends OP { val op = "b0000".U; val alu_op = ALUADD; val rs1 = Zero; val rs2 = Zero;  val rf_w = false.B; val mem_w = false.B; val mem_r = false.B; val has_cond = false.B; val cond_type = N }
 
 sealed trait CondType { val id: UInt }
-object EQ extends CondType { val id = 0.U }
-object GT extends CondType { val id = 1.U }
+object N  extends CondType { val id = 0.U }
+object EQ extends CondType { val id = 1.U }
+object GT extends CondType { val id = 2.U }
+object J  extends CondType { val id = 3.U }
+

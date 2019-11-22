@@ -5,6 +5,7 @@ import chisel3.util.MuxLookup
 import rabbit_core.Properties.XLEN
 import rabbit_core.`trait`.HasIO
 import rabbit_core.model.ALUIO
+import scala.language.reflectiveCalls
 
 class EX[M <: HasIO[ALUIO]](ALU: Class[M]) extends Module {
   val io = IO(new Bundle {
@@ -13,9 +14,9 @@ class EX[M <: HasIO[ALUIO]](ALU: Class[M]) extends Module {
     val alu_op = Input(UInt(2.W))
     val source1 = Input(UInt(XLEN.W))
     val source2 = Input(UInt(XLEN.W))
-    val cond_type = Input(UInt(XLEN.W))
+    val cond_type = Input(UInt(2.W))
     val alu_out = Output(UInt(XLEN.W))
-    val cond_valid = Output(Bool())
+    val pc_w = Output(Bool())
   })
   val alu = Module(ALU.newInstance())
   alu.io.alu_op := io.alu_op
@@ -23,8 +24,10 @@ class EX[M <: HasIO[ALUIO]](ALU: Class[M]) extends Module {
   alu.io.source2 := io.source2
   io.alu_out := alu.io.alu_out
 
-  io.cond_valid := MuxLookup(io.cond_type, DontCare, Array(
+  io.pc_w := MuxLookup(io.cond_type, DontCare, Array(
+    N.id  -> false.B,
     EQ.id -> io.source1.===(io.source2),
-    GT.id -> io.source1.>(io.source2)
+    GT.id -> io.source1.>(io.source2),
+    J.id  -> true.B
   ))
 }
