@@ -5,7 +5,7 @@ import rabbit_core.Properties._
 import rabbit_core.`trait`.HasIO
 import rabbit_core.model.RegFileIO
 
-class RegFile extends HasIO[RegFileIO] {
+class RegFile extends Module with HasIO[RegFileIO] {
   val io: RegFileIO = IO(new RegFileIO)
   val reg_file = Reg(Vec(RF_CNT, UInt(XLEN.W)))
   when (io.write_addr =/= 0.U) {
