@@ -8,14 +8,15 @@ import rabbit_core.models.InstMemoryIO
 import scala.language.reflectiveCalls
 import scala.reflect.ClassTag
 
-class IF[M <: Module with HasIO[InstMemoryIO]](implicit val IM: ClassTag[M]) extends Module {
-  val io = IO(new Bundle {
-    val pc_w = Input(Bool())
-    val alu_out = Input(UInt(XLEN.W))
+class IFIO extends Bundle {
+  val pc_w = Input(Bool())
+  val alu_out = Input(UInt(XLEN.W))
+  val inst = Output(UInt(XLEN.W))
+  val pc = Output(UInt(XLEN.W))
+}
 
-    val inst = Output(UInt(XLEN.W))
-    val pc = Output(UInt(XLEN.W))
-  })
+class IF[M <: Module with HasIO[InstMemoryIO]](implicit val IM: ClassTag[M]) extends Module {
+  val io = IO(new IFIO)
   val pc = RegInit(0.U(XLEN.W))
   val mem = Module(IM.runtimeClass.getConstructor().newInstance().asInstanceOf[M])
   mem.io.pc := pc

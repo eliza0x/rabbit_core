@@ -10,17 +10,19 @@ import rabbit_core.models.ALUIO
 import scala.language.reflectiveCalls
 import scala.reflect.ClassTag
 
+class EXIO extends Bundle {
+  val rd = Input(UInt(XLEN.W))
+  val rs = Input(UInt(XLEN.W))
+  val alu_op = Input(UInt(2.W))
+  val source1 = Input(UInt(XLEN.W))
+  val source2 = Input(UInt(XLEN.W))
+  val cond_type = Input(UInt(2.W))
+  val alu_out = Output(UInt(XLEN.W))
+  val pc_w = Output(Bool())
+}
+
 class EX[M <: Module with HasIO[ALUIO]](implicit val ALU: ClassTag[M]) extends Module {
-  val io = IO(new Bundle {
-    val rd = Input(UInt(XLEN.W))
-    val rs = Input(UInt(XLEN.W))
-    val alu_op = Input(UInt(2.W))
-    val source1 = Input(UInt(XLEN.W))
-    val source2 = Input(UInt(XLEN.W))
-    val cond_type = Input(UInt(2.W))
-    val alu_out = Output(UInt(XLEN.W))
-    val pc_w = Output(Bool())
-  })
+  val io = IO(new EXIO)
   val alu = Module(ALU.runtimeClass.newInstance().asInstanceOf[M])
   alu.io.alu_op := io.alu_op
   alu.io.source1 := io.source1

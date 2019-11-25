@@ -9,31 +9,33 @@ import rabbit_core.models._
 import scala.language.reflectiveCalls
 import scala.reflect.ClassTag // どうもchiselのModuleのio周りで使ってるっぽい、要調査
 
+class DEIO extends Bundle {
+  val inst = Input(UInt(XLEN.W))
+  val pc = Input(UInt(XLEN.W))
+
+  val in_rf_w = Input(Bool())
+  val in_mem_r = Input(Bool())
+  val in_rd_addr = Input(UInt(3.W))
+  val alu_out = Input(UInt(XLEN.W))
+  val mem_out = Input(UInt(XLEN.W))
+
+  val rf_w = Output(Bool())
+  val mem_w = Output(Bool())
+  val mem_r = Output(Bool())
+  val rd_addr = Output(UInt(4.W))
+  val alith = Output(UInt(2.W))
+  val rd = Output(UInt(XLEN.W))
+  val rs = Output(UInt(XLEN.W))
+  val source1 = Output(UInt(XLEN.W))
+  val source2 = Output(UInt(XLEN.W))
+  val cond_type = Output(UInt(2.W))
+}
+
 // RegFileIO IO Interfaceを備えたモジュールを受け取る
 // -> このことでテストを書くときに外部からいい感じのRegFileを渡すことができる
 // -> 例えば定数を返すRegFileやのぞみの初期値が入ったRegFile等
 class DE[M <: Module with HasIO[RegFileIO]](implicit val RF: ClassTag[M]) extends Module {
-  val io = IO(new Bundle {
-    val inst = Input(UInt(XLEN.W))
-    val pc = Input(UInt(XLEN.W))
-
-    val in_rf_w = Input(Bool())
-    val in_mem_r = Input(Bool())
-    val in_rd_addr = Input(UInt(3.W))
-    val alu_out = Input(UInt(XLEN.W))
-    val mem_out = Input(UInt(XLEN.W))
-
-    val rf_w = Output(Bool())
-    val mem_w = Output(Bool())
-    val mem_r = Output(Bool())
-    val rd_addr = Output(UInt(4.W))
-    val alith = Output(UInt(2.W))
-    val rd = Output(UInt(XLEN.W))
-    val rs = Output(UInt(XLEN.W))
-    val source1 = Output(UInt(XLEN.W))
-    val source2 = Output(UInt(XLEN.W))
-    val cond_type = Output(UInt(2.W))
-  })
+  val io = IO(new DEIO)
   val inst = Wire(new Inst)
   inst := io.inst.asTypeOf(new Inst)
 
