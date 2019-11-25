@@ -1,4 +1,4 @@
-package rabbit_core.model
+package rabbit_core.models
 
 import chisel3._
 import chisel3.util.log2Ceil

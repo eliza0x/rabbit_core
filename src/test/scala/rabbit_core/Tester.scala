@@ -21,33 +21,33 @@ class Tester extends ChiselFlatSpec {
   for (backendName <- backendNames) {
     behavior of "IF"
     it should s"count up pc with $backendName" in {
-      Driver(() => new IF(classOf[TestSequentialAccessIM]), backendName) {
+      Driver(() => new IF[TestSequentialAccessIM], backendName) {
         m: IF[TestSequentialAccessIM] => new IFUnitTester(m)
       } should be(true)
     }
     it should s"jump and branch with $backendName" in {
-      Driver(() => new IF(classOf[TestSequentialAccessIM]), backendName) {
+      Driver(() => new IF[TestSequentialAccessIM], backendName) {
         m: IF[TestSequentialAccessIM] => new IFJumpUnitTester(m)
       } should be(true)
     }
 
     behavior of "DE"
     it should s"nothing to do with $backendName" in {
-      Driver(() => (new DE(classOf[ConstRF])), backendName) {
+      Driver(() => new DE[ConstRF], backendName) {
         m: DE[ConstRF] => new DEUnitTester(m)
       } should be(true)
     }
 
     behavior of "MA"
     it should s"10 + 20 = 30 with $backendName" in {
-      Driver(() => (new EX(classOf[ALU])), backendName) {
+      Driver(() => new EX[ALU], backendName) {
         m: EX[ALU] => new EXUnitTest(m)
       } should be(true)
     }
 
     behavior of "MA"
     it should s"load and store with $backendName" in {
-      Driver(() => (new MA()), backendName) {
+      Driver(() => new MA, backendName) {
         m: MA => new MAUnitTest(m)
       } should be(true)
     }

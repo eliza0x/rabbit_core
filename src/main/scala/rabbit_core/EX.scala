@@ -3,11 +3,14 @@ package rabbit_core
 import chisel3._
 import chisel3.util.MuxLookup
 import rabbit_core.Properties.XLEN
-import rabbit_core.`trait`.HasIO
-import rabbit_core.model.ALUIO
-import scala.language.reflectiveCalls
 
-class EX[M <: HasIO[ALUIO]](ALU: Class[M]) extends Module {
+import rabbit_core.traits.HasIO
+import rabbit_core.models.ALUIO
+
+import scala.language.reflectiveCalls
+import scala.reflect.ClassTag
+
+class EX[M <: Module with HasIO[ALUIO]](implicit val ALU: ClassTag[M]) extends Module {
   val io = IO(new Bundle {
     val rd = Input(UInt(XLEN.W))
     val rs = Input(UInt(XLEN.W))
@@ -18,7 +21,7 @@ class EX[M <: HasIO[ALUIO]](ALU: Class[M]) extends Module {
     val alu_out = Output(UInt(XLEN.W))
     val pc_w = Output(Bool())
   })
-  val alu = Module(ALU.newInstance())
+  val alu = Module(ALU.runtimeClass.newInstance().asInstanceOf[M])
   alu.io.alu_op := io.alu_op
   alu.io.source1 := io.source1
   alu.io.source2 := io.source2

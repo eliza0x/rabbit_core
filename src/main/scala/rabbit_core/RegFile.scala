@@ -2,8 +2,8 @@ package rabbit_core
 
 import chisel3._
 import rabbit_core.Properties._
-import rabbit_core.`trait`.HasIO
-import rabbit_core.model.RegFileIO
+import rabbit_core.traits.HasIO
+import rabbit_core.models.RegFileIO
 
 class RegFile extends Module with HasIO[RegFileIO] {
   val io: RegFileIO = IO(new RegFileIO)

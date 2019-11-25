@@ -13,4 +13,3 @@ class DEUnitTester(m: DE[ConstRF]) extends PeekPokeTester(m) {
   expect(m.io.source1, 1)
   expect(m.io.source2, 2)
 }
-

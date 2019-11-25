@@ -1,4 +1,4 @@
-package rabbit_core.`trait`
+package rabbit_core.traits
 
 import chisel3._
 

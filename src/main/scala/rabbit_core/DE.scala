@@ -3,14 +3,16 @@ package rabbit_core
 import chisel3._
 import chisel3.util._
 import rabbit_core.Properties._
-import rabbit_core.`trait`._
-import rabbit_core.model._
-import scala.language.reflectiveCalls // どうもchiselのModuleのio周りで使ってるっぽい、要調査
+import rabbit_core.traits._
+import rabbit_core.models._
+
+import scala.language.reflectiveCalls
+import scala.reflect.ClassTag // どうもchiselのModuleのio周りで使ってるっぽい、要調査
 
 // RegFileIO IO Interfaceを備えたモジュールを受け取る
 // -> このことでテストを書くときに外部からいい感じのRegFileを渡すことができる
 // -> 例えば定数を返すRegFileやのぞみの初期値が入ったRegFile等
-class DE[M <: HasIO[RegFileIO]](RF: Class[M]) extends Module {
+class DE[M <: Module with HasIO[RegFileIO]](implicit val RF: ClassTag[M]) extends Module {
   val io = IO(new Bundle {
     val inst = Input(UInt(XLEN.W))
     val pc = Input(UInt(XLEN.W))
@@ -35,7 +37,7 @@ class DE[M <: HasIO[RegFileIO]](RF: Class[M]) extends Module {
   val inst = Wire(new Inst)
   inst := io.inst.asTypeOf(new Inst)
 
-  val rf = Module(RF.newInstance())
+  val rf = Module(RF.runtimeClass.newInstance().asInstanceOf[M])
   val rd = Wire(UInt(XLEN.W))
   val rs = Wire(UInt(XLEN.W))
   rf.io.read_addr1 := inst.rd

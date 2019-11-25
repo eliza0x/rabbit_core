@@ -2,9 +2,9 @@ package rabbit_core
 
 import chisel3._
 import chisel3.util._
-import rabbit_core.`trait`.HasIO
+import rabbit_core.traits.HasIO
 import rabbit_core.Properties._
-import rabbit_core.model.ALUIO
+import rabbit_core.models.ALUIO
 
 class ALU extends Module with HasIO[ALUIO] {
   val io = IO(new ALUIO)

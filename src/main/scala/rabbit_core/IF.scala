@@ -2,11 +2,13 @@ package rabbit_core
 
 import chisel3._
 import Properties._
-import rabbit_core.`trait`.HasIO
-import rabbit_core.model.InstMemoryIO
-import scala.language.reflectiveCalls
+import rabbit_core.traits.HasIO
+import rabbit_core.models.InstMemoryIO
 
-class IF[M <: HasIO[InstMemoryIO]](IM: Class[M]) extends Module {
+import scala.language.reflectiveCalls
+import scala.reflect.ClassTag
+
+class IF[M <: Module with HasIO[InstMemoryIO]](implicit val IM: ClassTag[M]) extends Module {
   val io = IO(new Bundle {
     val pc_w = Input(Bool())
     val alu_out = Input(UInt(XLEN.W))
@@ -15,7 +17,7 @@ class IF[M <: HasIO[InstMemoryIO]](IM: Class[M]) extends Module {
     val pc = Output(UInt(XLEN.W))
   })
   val pc = RegInit(0.U(XLEN.W))
-  val mem = Module(IM.newInstance())
+  val mem = Module(IM.runtimeClass.getConstructor().newInstance().asInstanceOf[M])
   mem.io.pc := pc
   io.inst  := mem.io.inst
 
