@@ -2,6 +2,8 @@ package rabbit_core
 
 import chisel3._
 import rabbit_core.Properties._
+import rabbit_core.traits.HasIO
+
 import scala.language.reflectiveCalls
 
 class MAIO extends Bundle {
@@ -12,7 +14,7 @@ class MAIO extends Bundle {
   val mem_out = Output(UInt(XLEN.W))
 }
 
-class MA extends Module {
+class MA extends Module with HasIO[MAIO] {
   val io = IO(new MAIO)
   val mem = SyncReadMem(Math.pow(2, XLEN).toInt, UInt(XLEN.W))
   when (io.mem_w) {

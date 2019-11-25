@@ -21,7 +21,7 @@ class EXIO extends Bundle {
   val pc_w = Output(Bool())
 }
 
-class EX[M <: Module with HasIO[ALUIO]](implicit val ALU: ClassTag[M]) extends Module {
+class EX[M <: Module with HasIO[ALUIO]](implicit val ALU: ClassTag[M]) extends Module with HasIO[EXIO] {
   val io = IO(new EXIO)
   val alu = Module(ALU.runtimeClass.newInstance().asInstanceOf[M])
   alu.io.alu_op := io.alu_op

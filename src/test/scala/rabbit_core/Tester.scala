@@ -51,5 +51,12 @@ class Tester extends ChiselFlatSpec {
         m: MA => new MAUnitTest(m)
       } should be(true)
     }
+
+    behavior of "Hart"
+    it should s"integration test with $backendName" in {
+      Driver(() => new Hart[IF[TestSequentialAccessIM]], backendName) {
+        m: Hart[IF[TestSequentialAccessIM]] => new HartUnitTest(m)
+      } should be(true)
+    }
   }
 }
