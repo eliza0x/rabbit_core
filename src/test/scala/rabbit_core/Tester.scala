@@ -1,7 +1,7 @@
 package rabbit_core
 
 import chisel3.iotesters._
-import rabbit_core.stab_modules.{ConstRF, TestSequentialAccessIM}
+import rabbit_core.stab_modules.{ConstRF, TestSequentialAccessIM, TestSimpleAddIM}
 
 /**
   * This is a trivial example of how to run this Specification
@@ -18,11 +18,13 @@ import rabbit_core.stab_modules.{ConstRF, TestSequentialAccessIM}
 object ImplicitInstances {
   implicit val Im = () => new InstMemory
   implicit val SeqIu = () => new TestSequentialAccessIM
+  implicit val SimpleAddIM = () => new TestSimpleAddIM
   implicit val ConstRf = () => new ConstRF
   implicit val Rf = () => new RegFile
   implicit val Alu = () => new ALU
   implicit val IfIm = () => new IF[InstMemory]
   implicit val IfSeqim = () => new IF[TestSequentialAccessIM]
+  implicit val IfSimAdd = () => new IF[TestSimpleAddIM]
   implicit val DeRf = () => new DE[RegFile]
   implicit val DeConstRf = () => new DE[ConstRF]
   implicit val ExAlu = () => new EX[ALU]
@@ -69,9 +71,9 @@ class Tester extends ChiselFlatSpec {
     }
 
     behavior of "Hart"
-    it should s"tmp test with $backendName" in {
-      Driver(() => new Hart[IF[InstMemory], DE[RegFile], EX[ALU], MA], backendName) {
-        m => new HartUnitTest(m)
+    it should s"simple add test with $backendName" in {
+      Driver(() => new Hart[IF[TestSimpleAddIM], DE[RegFile], EX[ALU], MA], backendName) {
+        m => new HartSimpleAddUnitTest(m)
       } should be(true)
     }
   }
