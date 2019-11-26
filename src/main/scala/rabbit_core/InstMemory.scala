@@ -7,7 +7,7 @@ import rabbit_core.models._
 
 class InstMemory extends Module with HasIO[InstMemoryIO] {
   val io = IO(new InstMemoryIO)
-  val mem = SyncReadMem(Math.pow(2, XLEN).toInt, UInt(XLEN.W))
+  val mem = Mem(Math.pow(2, XLEN).toInt, UInt(XLEN.W))
   io.inst := mem(io.pc)
 }
 

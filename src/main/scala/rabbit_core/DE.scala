@@ -37,8 +37,7 @@ class DE[M <: Module with HasIO[RegFileIO]](
   implicit val RF: () => M
 ) extends Module with HasIO[DEIO] {
   val io = IO(new DEIO)
-  val inst = Wire(new Inst)
-  inst := io.inst.asTypeOf(new Inst)
+  val inst = io.inst.asTypeOf(new Inst)
 
   val rf = Module(RF())
   val rd = Wire(UInt(XLEN.W))
@@ -138,7 +137,7 @@ object ADDI extends OP { val op = "b0101".U; val alu_op = ALUADD; val rs1 = RD; 
 object SUBI extends OP { val op = "b0110".U; val alu_op = ALUSUB; val rs1 = RD;   val rs2 = Disp6; val rf_w = true.B;  val mem_w = false.B; val mem_r = false.B; val has_cond = false.B; val cond_type = N }
 object INCR extends OP { val op = "b0111".U; val alu_op = ALUADD; val rs1 = RD;   val rs2 = One;   val rf_w = true.B;  val mem_w = false.B; val mem_r = false.B; val has_cond = false.B; val cond_type = N }
 object DECR extends OP { val op = "b1000".U; val alu_op = ALUSUB; val rs1 = RD;   val rs2 = One;   val rf_w = true.B;  val mem_w = false.B; val mem_r = false.B; val has_cond = false.B; val cond_type = N }
-object  LDI extends OP { val op = "b1001".U; val alu_op = ALUADD; val rs1 = RD;   val rs2 = Imm9;  val rf_w = true.B;  val mem_w = false.B; val mem_r = false.B; val has_cond = false.B; val cond_type = N }
+object  LDI extends OP { val op = "b1001".U; val alu_op = ALUADD; val rs1 = Zero; val rs2 = Imm9;  val rf_w = true.B;  val mem_w = false.B; val mem_r = false.B; val has_cond = false.B; val cond_type = N }
 object   LD extends OP { val op = "b1010".U; val alu_op = ALUADD; val rs1 = RD;   val rs2 = Disp6; val rf_w = true.B;  val mem_w = false.B; val mem_r = true.B;  val has_cond = false.B; val cond_type = N }
 object   ST extends OP { val op = "b1011".U; val alu_op = ALUADD; val rs1 = RD;   val rs2 = Disp6; val rf_w = false.B; val mem_w = true.B;  val mem_r = false.B; val has_cond = false.B; val cond_type = N }
 object  BEQ extends OP { val op = "b1100".U; val alu_op = ALUADD; val rs1 = PC;   val rs2 = Disp6; val rf_w = false.B; val mem_w = false.B; val mem_r = false.B; val has_cond = true.B;  val cond_type = EQ }

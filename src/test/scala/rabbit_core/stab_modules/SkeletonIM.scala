@@ -7,5 +7,5 @@ import rabbit_core.models._
 class SkeletonIM(insts: UInt*) extends Module with HasIO[InstMemoryIO] {
   val io = IO(new InstMemoryIO)
   val mem = VecInit(insts)
-  io.inst := RegNext(mem(io.pc))
+  io.inst := mem(io.pc)
 }

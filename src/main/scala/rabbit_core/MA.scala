@@ -16,7 +16,7 @@ class MAIO extends Bundle {
 
 class MA extends Module with HasIO[MAIO] {
   val io = IO(new MAIO)
-  val mem = SyncReadMem(Math.pow(2, XLEN).toInt, UInt(XLEN.W))
+  val mem = Mem(Math.pow(2, XLEN).toInt, UInt(XLEN.W))
   when (io.mem_w) {
     mem.write(io.alu_out, io.rd)
   }

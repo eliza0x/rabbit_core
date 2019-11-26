@@ -5,7 +5,7 @@ import chisel3.util.log2Ceil
 import rabbit_core.Properties._
 
 class RegFileIO extends Bundle {
-  val write_addr = Input(UInt(log2Ceil(XLEN).W))
+  val write_addr = Input(UInt(3.W))
   val write_data = Input(UInt(XLEN.W))
   val read_addr1 = Input(UInt(log2Ceil(RF_CNT).W))
   val read_addr2 = Input(UInt(log2Ceil(RF_CNT).W))

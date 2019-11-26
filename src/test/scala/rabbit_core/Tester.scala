@@ -1,7 +1,7 @@
 package rabbit_core
 
 import chisel3.iotesters._
-import rabbit_core.stab_modules.{ConstRF, TestSequentialAccessIM, TestSimpleAddIM}
+import rabbit_core.stab_modules._
 
 /**
   * This is a trivial example of how to run this Specification
@@ -19,15 +19,24 @@ object ImplicitInstances {
   implicit val Im = () => new InstMemory
   implicit val SeqIu = () => new TestSequentialAccessIM
   implicit val SimpleAddIM = () => new TestSimpleAddIM
+  implicit val SimpleSubIM = () => new TestSimpleSubIM
+  implicit val SimpleAndIM = () => new TestSimpleAndIM
+  implicit val SimpleOrIM = () => new TestSimpleOrIM
+  implicit val SimpleAddiIM = () => new TestSimpleAddiIM
+  implicit val SimpleSubiIM = () => new TestSimpleSubiIM
   implicit val ConstRf = () => new ConstRF
   implicit val Rf = () => new RegFile
   implicit val Alu = () => new ALU
-  implicit val IfIm = () => new IF[InstMemory]
-  implicit val IfSeqim = () => new IF[TestSequentialAccessIM]
-  implicit val IfSimAdd = () => new IF[TestSimpleAddIM]
+  implicit val IfSeqIM = () => new IF[TestSequentialAccessIM]
+  implicit val IfAddIM = () => new IF[TestSimpleAddIM]
+  implicit val IfSubIM = () => new IF[TestSimpleSubIM]
+  implicit val IfAndIM = () => new IF[TestSimpleAndIM]
+  implicit val IfOrIM = () => new IF[TestSimpleOrIM]
+  implicit val IfAddiIM = () => new IF[TestSimpleAddiIM]
+  implicit val IfSubiIM = () => new IF[TestSimpleSubiIM]
   implicit val DeRf = () => new DE[RegFile]
-  implicit val DeConstRf = () => new DE[ConstRF]
-  implicit val ExAlu = () => new EX[ALU]
+  implicit val DeConstRF = () => new DE[ConstRF]
+  implicit val Ex = () => new EX[ALU]
   implicit val Ma = () => new MA
 }
 
@@ -74,6 +83,31 @@ class Tester extends ChiselFlatSpec {
     it should s"simple add test with $backendName" in {
       Driver(() => new Hart[IF[TestSimpleAddIM], DE[RegFile], EX[ALU], MA], backendName) {
         m => new HartSimpleAddUnitTest(m)
+      } should be(true)
+    }
+    it should s"simple sub test with $backendName" in {
+      Driver(() => new Hart[IF[TestSimpleSubIM], DE[RegFile], EX[ALU], MA], backendName) {
+        m => new HartSimpleSubUnitTest(m)
+      } should be(true)
+    }
+    it should s"simple and test with $backendName" in {
+      Driver(() => new Hart[IF[TestSimpleAndIM], DE[RegFile], EX[ALU], MA], backendName) {
+        m => new HartSimpleAndUnitTest(m)
+      } should be(true)
+    }
+    it should s"simple or test with $backendName" in {
+      Driver(() => new Hart[IF[TestSimpleOrIM], DE[RegFile], EX[ALU], MA], backendName) {
+        m => new HartSimpleOrUnitTest(m)
+      } should be(true)
+    }
+    it should s"simple addi test with $backendName" in {
+      Driver(() => new Hart[IF[TestSimpleAddiIM], DE[RegFile], EX[ALU], MA], backendName) {
+        m => new HartSimpleAddiUnitTest(m)
+      } should be(true)
+    }
+    it should s"simple subi test with $backendName" in {
+      Driver(() => new Hart[IF[TestSimpleSubiIM], DE[RegFile], EX[ALU], MA], backendName) {
+        m => new HartSimpleSubiUnitTest(m)
       } should be(true)
     }
   }
