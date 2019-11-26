@@ -8,7 +8,6 @@ import rabbit_core.traits.HasIO
 import rabbit_core.models.ALUIO
 
 import scala.language.reflectiveCalls
-import scala.reflect.ClassTag
 
 class EXIO extends Bundle {
   val rd = Input(UInt(XLEN.W))

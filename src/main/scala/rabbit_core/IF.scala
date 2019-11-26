@@ -6,7 +6,6 @@ import rabbit_core.traits.HasIO
 import rabbit_core.models.InstMemoryIO
 
 import scala.language.reflectiveCalls
-import scala.reflect.ClassTag
 
 class IFIO extends Bundle {
   val pc_w = Input(Bool())

@@ -1,13 +1,8 @@
 package rabbit_core
 
-import java.lang.reflect.Constructor
-
 import chisel3._
 import rabbit_core.traits.HasIO
 import rabbit_core.Properties._
-import rabbit_core.models.{ALUIO, InstMemoryIO, RegFileIO}
-
-import scala.reflect.ClassTag
 
 class HartIO extends Bundle {
   val out = Output(UInt(XLEN.W))
@@ -25,10 +20,10 @@ class Hart[
    implicit val MA: () => MAM,
 ) extends Module with HasIO[HartIO] {
   val io = IO(new HartIO)
-  val mif = Module(IF())
-  val mde = Module(DE())
-  val mex = Module(EX())
-  val mma = Module(MA())
+  val mif: IFM = Module(IF())
+  val mde: DEM = Module(DE())
+  val mex: EXM = Module(EX())
+  val mma: MAM = Module(MA())
 
   mif.io.pc_w := mex.io.pc_w
   mif.io.alu_out := mex.io.alu_out

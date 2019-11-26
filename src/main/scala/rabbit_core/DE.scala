@@ -6,8 +6,7 @@ import rabbit_core.Properties._
 import rabbit_core.traits._
 import rabbit_core.models._
 
-import scala.language.reflectiveCalls
-import scala.reflect.ClassTag // どうもchiselのModuleのio周りで使ってるっぽい、要調査
+import scala.language.reflectiveCalls // どうもchiselのModuleのio周りで使ってるっぽい、要調査
 
 class DEIO extends Bundle {
   val inst = Input(UInt(XLEN.W))
