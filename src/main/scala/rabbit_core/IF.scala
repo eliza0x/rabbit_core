@@ -15,10 +15,12 @@ class IFIO extends Bundle {
   val pc = Output(UInt(XLEN.W))
 }
 
-class IF[M <: Module with HasIO[InstMemoryIO]](implicit val IM: ClassTag[M]) extends Module with HasIO[IFIO] {
+class IF[M <: Module with HasIO[InstMemoryIO]](
+  implicit val IM: () => M
+) extends Module with HasIO[IFIO] {
   val io = IO(new IFIO)
   val pc = RegInit(0.U(XLEN.W))
-  val mem = Module(IM.runtimeClass.getConstructor().newInstance().asInstanceOf[M])
+  val mem = Module(IM())
   mem.io.pc := pc
   io.inst  := mem.io.inst
 

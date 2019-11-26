@@ -1,8 +1,11 @@
 package rabbit_core
 
+import java.lang.reflect.Constructor
+
 import chisel3._
 import rabbit_core.traits.HasIO
 import rabbit_core.Properties._
+import rabbit_core.models.{ALUIO, InstMemoryIO, RegFileIO}
 
 import scala.reflect.ClassTag
 
@@ -10,23 +13,22 @@ class HartIO extends Bundle {
   val out = Output(UInt(XLEN.W))
 }
 
-// class Hart[
-//   A <: Module with HasIO[IFIO],
-//   B <: Module with HasIO[DEIO],
-//   C <: Module with HasIO[EXIO],
-//   D <: Module with HasIO[MAIO]
-// ](
-//  val M0: Class[IF[InstMemory]],
-//  val M1: Class[DE[RegFile]],
-//  val M2: Class[EX[ALU]],
-//  val M3: Class[MA]
-
-class Hart[M <: Module with HasIO[IFIO]](implicit val IF: ClassTag[M]) extends Module with HasIO[HartIO] {
+class Hart[
+  IFM <: Module with HasIO[IFIO],
+  DEM <: Module with HasIO[DEIO],
+  EXM <: Module with HasIO[EXIO],
+  MAM <: Module with HasIO[MAIO],
+] (
+   implicit val IF: () => IFM,
+   implicit val DE: () => DEM,
+   implicit val EX: () => EXM,
+   implicit val MA: () => MAM,
+) extends Module with HasIO[HartIO] {
   val io = IO(new HartIO)
-  val mif = Module(IF.runtimeClass.newInstance.asInstanceOf[M])
-  val mde = Module(new DE[RegFile])
-  val mex = Module(new EX[ALU])
-  val mma = Module(new MA)
+  val mif = Module(IF())
+  val mde = Module(DE())
+  val mex = Module(EX())
+  val mma = Module(MA())
 
   mif.io.pc_w := mex.io.pc_w
   mif.io.alu_out := mex.io.alu_out

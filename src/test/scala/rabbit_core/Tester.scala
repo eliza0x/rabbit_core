@@ -15,7 +15,23 @@ import rabbit_core.stab_modules.{ConstRF, TestSequentialAccessIM}
   * }}}
   */
 
+object ImplicitInstances {
+  implicit val Im = () => new InstMemory
+  implicit val SeqIu = () => new TestSequentialAccessIM
+  implicit val ConstRf = () => new ConstRF
+  implicit val Rf = () => new RegFile
+  implicit val Alu = () => new ALU
+  implicit val IfIm = () => new IF[InstMemory]
+  implicit val IfSeqim = () => new IF[TestSequentialAccessIM]
+  implicit val DeRf = () => new DE[RegFile]
+  implicit val DeConstRf = () => new DE[ConstRF]
+  implicit val ExAlu = () => new EX[ALU]
+  implicit val Ma = () => new MA
+}
+
 class Tester extends ChiselFlatSpec {
+  import rabbit_core.ImplicitInstances._
+
   // private val backendNames = Array("firrtl", "verilator")
   private val backendNames = Array("firrtl")
   for (backendName <- backendNames) {
@@ -53,9 +69,9 @@ class Tester extends ChiselFlatSpec {
     }
 
     behavior of "Hart"
-    it should s"integration test with $backendName" in {
-      Driver(() => new Hart[IF[TestSequentialAccessIM]], backendName) {
-        m: Hart[IF[TestSequentialAccessIM]] => new HartUnitTest(m)
+    it should s"tmp test with $backendName" in {
+      Driver(() => new Hart[IF[InstMemory], DE[RegFile], EX[ALU], MA], backendName) {
+        m => new HartUnitTest(m)
       } should be(true)
     }
   }

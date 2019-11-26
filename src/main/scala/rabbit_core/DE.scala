@@ -34,12 +34,14 @@ class DEIO extends Bundle {
 // RegFileIO IO Interfaceを備えたモジュールを受け取る
 // -> このことでテストを書くときに外部からいい感じのRegFileを渡すことができる
 // -> 例えば定数を返すRegFileやのぞみの初期値が入ったRegFile等
-class DE[M <: Module with HasIO[RegFileIO]](implicit val RF: ClassTag[M]) extends Module with HasIO[DEIO] {
+class DE[M <: Module with HasIO[RegFileIO]](
+  implicit val RF: () => M
+) extends Module with HasIO[DEIO] {
   val io = IO(new DEIO)
   val inst = Wire(new Inst)
   inst := io.inst.asTypeOf(new Inst)
 
-  val rf = Module(RF.runtimeClass.newInstance().asInstanceOf[M])
+  val rf = Module(RF())
   val rd = Wire(UInt(XLEN.W))
   val rs = Wire(UInt(XLEN.W))
   rf.io.read_addr1 := inst.rd
