@@ -2,6 +2,7 @@ package rabbit_core
 
 import chisel3.iotesters._
 import rabbit_core.stab_modules._
+import scala.language.implicitConversions
 
 /**
   * This is a trivial example of how to run this Specification
@@ -24,6 +25,7 @@ object ImplicitInstances {
   implicit val SimpleOrIM = () => new TestSimpleOrIM
   implicit val SimpleAddiIM = () => new TestSimpleAddiIM
   implicit val SimpleSubiIM = () => new TestSimpleSubiIM
+  implicit val SimpleJumpIM = () => new TestSimpleJumpIM
   implicit val ConstRf = () => new ConstRF
   implicit val Rf = () => new RegFile
   implicit val Alu = () => new ALU
@@ -34,6 +36,7 @@ object ImplicitInstances {
   implicit val IfOrIM = () => new IF[TestSimpleOrIM]
   implicit val IfAddiIM = () => new IF[TestSimpleAddiIM]
   implicit val IfSubiIM = () => new IF[TestSimpleSubiIM]
+  implicit val IfJumpIM = () => new IF[TestSimpleJumpIM]
   implicit val DeRf = () => new DE[RegFile]
   implicit val DeConstRF = () => new DE[ConstRF]
   implicit val Ex = () => new EX[ALU]
@@ -108,6 +111,11 @@ class Tester extends ChiselFlatSpec {
     it should s"simple subi test with $backendName" in {
       Driver(() => new Hart[IF[TestSimpleSubiIM], DE[RegFile], EX[ALU], MA], backendName) {
         m => new HartSimpleSubiUnitTest(m)
+      } should be(true)
+    }
+    it should s"simple jump test with $backendName" in {
+      Driver(() => new Hart[IF[TestSimpleJumpIM], DE[RegFile], EX[ALU], MA], backendName) {
+        m => new HartSimpleJumpUnitTest(m)
       } should be(true)
     }
   }

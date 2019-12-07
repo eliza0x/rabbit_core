@@ -48,3 +48,14 @@ class HartSimpleSubiUnitTest(hart: Hart[IF[TestSimpleSubiIM], DE[RegFile], EX[AL
   step(1)
   expect(hart.io.out, 3)
 }
+
+class HartSimpleJumpUnitTest(hart: Hart[IF[TestSimpleJumpIM], DE[RegFile], EX[ALU], MA]) extends PeekPokeTester(hart) {
+  for (i <- 0 until 10) {
+    step(1)
+    if (i%2 == 0) {
+      expect(hart.io.out, 2)
+    } else {
+      expect(hart.io.out, 4)
+    }
+  }
+}
