@@ -1,7 +1,10 @@
 package rabbit_core
 
+import chisel3.Module
 import rabbit_core.stab_modules._
 import chisel3.iotesters._
+import rabbit_core.models.InstMemoryIO
+import rabbit_core.traits.HasIO
 
 import scala.language.reflectiveCalls
 
@@ -100,7 +103,7 @@ class HartSimpleJumpUnitTest(hart: Hart[IF[TestSimpleJumpIM], DE[RegFile], EX[AL
   }
 }
 
-class HartSumUnitTest(hart: Hart[IF[TestSumIM], DE[RegFile], EX[ALU], MA]) extends PeekPokeTester(hart) {
+class HartSumUnitTest[M <: Module with HasIO[InstMemoryIO]](hart: Hart[IF[M], DE[RegFile], EX[ALU], MA]) extends PeekPokeTester(hart) {
   val sumCnt: Int = {
     var cnt = 2 // ldi * 3 - (1 : 最初のクロックはカウントしなくても実行される)
     var r1 = 0
