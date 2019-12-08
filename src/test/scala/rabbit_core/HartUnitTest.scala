@@ -102,7 +102,7 @@ class HartSimpleJumpUnitTest(hart: Hart[IF[TestSimpleJumpIM], DE[RegFile], EX[AL
 
 class HartSumUnitTest(hart: Hart[IF[TestSumIM], DE[RegFile], EX[ALU], MA]) extends PeekPokeTester(hart) {
   val sumCnt: Int = {
-    var cnt = 3 // ldi * 3
+    var cnt = 2 // ldi * 3 - (1 : 最初のクロックはカウントしなくても実行される)
     var r1 = 0
     do {
       r1 += 1

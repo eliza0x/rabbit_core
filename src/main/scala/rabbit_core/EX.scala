@@ -32,8 +32,8 @@ class EX[M <: Module with HasIO[ALUIO]](
 
   io.pc_w := MuxLookup(io.cond_type, DontCare, Array(
     N.id  -> false.B,
-    EQ.id -> io.source1.===(io.source2),
-    GT.id -> io.source1.>(io.source2),
+    EQ.id -> io.rd.===(io.rs),
+    GT.id -> io.rd.>(io.rs),
     J.id  -> true.B
   ))
 }
