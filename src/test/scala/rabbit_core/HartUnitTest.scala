@@ -49,6 +49,46 @@ class HartSimpleSubiUnitTest(hart: Hart[IF[TestSimpleSubiIM], DE[RegFile], EX[AL
   expect(hart.io.out, 3)
 }
 
+class HartSimpleIncrUnitTest(hart: Hart[IF[TestSimpleIncrIM], DE[RegFile], EX[ALU], MA]) extends PeekPokeTester(hart) {
+  expect(hart.io.out, 5)
+  step(1)
+  expect(hart.io.out, 6)
+}
+
+class HartSimpleDecrUnitTest(hart: Hart[IF[TestSimpleDecrIM], DE[RegFile], EX[ALU], MA]) extends PeekPokeTester(hart) {
+  expect(hart.io.out, 5)
+  step(1)
+  expect(hart.io.out, 4)
+}
+
+class HartSimpleLdiUnitTest(hart: Hart[IF[TestSimpleLdiIM], DE[RegFile], EX[ALU], MA]) extends PeekPokeTester(hart) {
+  expect(hart.io.out, 5)
+  step(1)
+  expect(hart.io.out, 10)
+  step(1)
+  expect(hart.io.out, 15)
+}
+
+class HartSimpleLdUnitTest(hart: Hart[IF[TestSimpleLdIM], DE[RegFile], EX[ALU], TestMA]) extends PeekPokeTester(hart) {
+  expect(hart.io.out, 5)
+  step(1)
+  expect(hart.io.out, 10)
+  step(1)
+  expect(hart.io.out, 10)
+}
+
+class HartSimpleStUnitTest(hart: Hart[IF[TestSimpleStIM], DE[RegFile], EX[ALU], MA]) extends PeekPokeTester(hart) {
+  expect(hart.io.out, 5)
+  step(1)
+  expect(hart.io.out, 10)
+  step(1)
+  expect(hart.io.out, 15)
+  step(1)
+  expect(hart.io.out, 15)
+  step(1)
+  expect(hart.io.out, 10)
+}
+
 class HartSimpleJumpUnitTest(hart: Hart[IF[TestSimpleJumpIM], DE[RegFile], EX[ALU], MA]) extends PeekPokeTester(hart) {
   for (i <- 0 until 10) {
     step(1)

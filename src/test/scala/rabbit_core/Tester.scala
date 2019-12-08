@@ -25,10 +25,16 @@ object ImplicitInstances {
   implicit val SimpleOrIM = () => new TestSimpleOrIM
   implicit val SimpleAddiIM = () => new TestSimpleAddiIM
   implicit val SimpleSubiIM = () => new TestSimpleSubiIM
+  implicit val SimpleIncrIM = () => new TestSimpleIncrIM
+  implicit val SimpleDecrIM = () => new TestSimpleDecrIM
+  implicit val SimpleLdiIM = () => new TestSimpleLdiIM
+  implicit val SimpleLdIM = () => new TestSimpleLdIM
+  implicit val SimpleStIM = () => new TestSimpleStIM
   implicit val SimpleJumpIM = () => new TestSimpleJumpIM
   implicit val ConstRf = () => new ConstRF
   implicit val Rf = () => new RegFile
   implicit val Alu = () => new ALU
+  implicit val TestIM = () => new TestMA
   implicit val IfSeqIM = () => new IF[TestSequentialAccessIM]
   implicit val IfAddIM = () => new IF[TestSimpleAddIM]
   implicit val IfSubIM = () => new IF[TestSimpleSubIM]
@@ -36,6 +42,11 @@ object ImplicitInstances {
   implicit val IfOrIM = () => new IF[TestSimpleOrIM]
   implicit val IfAddiIM = () => new IF[TestSimpleAddiIM]
   implicit val IfSubiIM = () => new IF[TestSimpleSubiIM]
+  implicit val IfIncrIM = () => new IF[TestSimpleIncrIM]
+  implicit val IfDecrIM = () => new IF[TestSimpleDecrIM]
+  implicit val IfLdiIM = () => new IF[TestSimpleLdiIM]
+  implicit val IfLdIM = () => new IF[TestSimpleLdIM]
+  implicit val IfStIM = () => new IF[TestSimpleStIM]
   implicit val IfJumpIM = () => new IF[TestSimpleJumpIM]
   implicit val DeRf = () => new DE[RegFile]
   implicit val DeConstRF = () => new DE[ConstRF]
@@ -111,6 +122,31 @@ class Tester extends ChiselFlatSpec {
     it should s"simple subi test with $backendName" in {
       Driver(() => new Hart[IF[TestSimpleSubiIM], DE[RegFile], EX[ALU], MA], backendName) {
         m => new HartSimpleSubiUnitTest(m)
+      } should be(true)
+    }
+    it should s"simple incr test with $backendName" in {
+      Driver(() => new Hart[IF[TestSimpleIncrIM], DE[RegFile], EX[ALU], MA], backendName) {
+        m => new HartSimpleIncrUnitTest(m)
+      } should be(true)
+    }
+    it should s"simple decr test with $backendName" in {
+      Driver(() => new Hart[IF[TestSimpleDecrIM], DE[RegFile], EX[ALU], MA], backendName) {
+        m => new HartSimpleDecrUnitTest(m)
+      } should be(true)
+    }
+    it should s"simple ldi test with $backendName" in {
+      Driver(() => new Hart[IF[TestSimpleLdiIM], DE[RegFile], EX[ALU], MA], backendName) {
+        m => new HartSimpleLdiUnitTest(m)
+      } should be(true)
+    }
+    it should s"simple ld test with $backendName" in {
+      Driver(() => new Hart[IF[TestSimpleLdIM], DE[RegFile], EX[ALU], TestMA], backendName) {
+        m => new HartSimpleLdUnitTest(m)
+      } should be(true)
+    }
+    it should s"simple ld/st test with $backendName" in {
+      Driver(() => new Hart[IF[TestSimpleStIM], DE[RegFile], EX[ALU], MA], backendName) {
+        m => new HartSimpleStUnitTest(m)
       } should be(true)
     }
     it should s"simple jump test with $backendName" in {
