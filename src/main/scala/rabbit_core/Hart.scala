@@ -49,5 +49,5 @@ class Hart[
   mma.io.alu_out := mex.io.alu_out
 
   io.out := mex.io.alu_out
-  // printf("pc = %d, out = %d\n",mif.io.pc, io.out)
+  // printf("tc = %d, pc = %d, out = %d\n",mif,io.total_cnt, mif.io.pc, io.out)
 }
