@@ -59,15 +59,16 @@ class DE[M <: Module with HasIO[RegFileIO]](
   io.source1 := MuxLookup(source1_sel, rd, Array(
     Zero.id -> 0.U,
     RD.id -> rd,
-    PC.id -> io.pc
+    RS.id -> rs,
+    PC.id -> io.pc,
   ))
 
   io.source2 := MuxLookup(source2_sel, rs, Array(
     Zero.id -> 0.U,
+    RS.id -> rs,
     One.id -> 1.U,
     Disp6.id -> inst.disp6,
     Imm9.id -> Cat(inst.rs, inst.disp6),
-    RS.id -> rs
   ))
 
   def conOp(op: OP): Unit = {
@@ -103,10 +104,10 @@ class DE[M <: Module with HasIO[RegFileIO]](
 sealed trait Source { val id: UInt }
 sealed trait Source1 extends Source
 object Zero  extends Source2 with Source1 { val id = 0.U }
-object RD    extends Source1 { val id = 1.U }
-object PC    extends Source1 { val id = 2.U }
+object RS    extends Source2 with Source1 { val id = 1.U }
+object RD    extends Source1 { val id = 2.U }
+object PC    extends Source1 { val id = 3.U }
 sealed trait Source2 extends Source
-object RS    extends Source2 { val id = 1.U }
 object Disp6 extends Source2 { val id = 2.U }
 object Imm9  extends Source2 { val id = 3.U }
 object One   extends Source2 { val id = 4.U }
@@ -138,8 +139,8 @@ object SUBI extends OP { val op = "b0110".U; val alu_op = ALUSUB; val rs1 = RD; 
 object INCR extends OP { val op = "b0111".U; val alu_op = ALUADD; val rs1 = RD;   val rs2 = One;   val rf_w = true.B;  val mem_w = false.B; val mem_r = false.B; val has_cond = false.B; val cond_type = N }
 object DECR extends OP { val op = "b1000".U; val alu_op = ALUSUB; val rs1 = RD;   val rs2 = One;   val rf_w = true.B;  val mem_w = false.B; val mem_r = false.B; val has_cond = false.B; val cond_type = N }
 object  LDI extends OP { val op = "b1001".U; val alu_op = ALUADD; val rs1 = Zero; val rs2 = Imm9;  val rf_w = true.B;  val mem_w = false.B; val mem_r = false.B; val has_cond = false.B; val cond_type = N }
-object   LD extends OP { val op = "b1010".U; val alu_op = ALUADD; val rs1 = RD;   val rs2 = Disp6; val rf_w = true.B;  val mem_w = false.B; val mem_r = true.B;  val has_cond = false.B; val cond_type = N }
-object   ST extends OP { val op = "b1011".U; val alu_op = ALUADD; val rs1 = RD;   val rs2 = Disp6; val rf_w = false.B; val mem_w = true.B;  val mem_r = false.B; val has_cond = false.B; val cond_type = N }
+object   LD extends OP { val op = "b1010".U; val alu_op = ALUADD; val rs1 = RS;   val rs2 = Disp6; val rf_w = true.B;  val mem_w = false.B; val mem_r = true.B;  val has_cond = false.B; val cond_type = N }
+object   ST extends OP { val op = "b1011".U; val alu_op = ALUADD; val rs1 = RS;   val rs2 = Disp6; val rf_w = false.B; val mem_w = true.B;  val mem_r = false.B; val has_cond = false.B; val cond_type = N }
 object  BEQ extends OP { val op = "b1100".U; val alu_op = ALUADD; val rs1 = PC;   val rs2 = Disp6; val rf_w = false.B; val mem_w = false.B; val mem_r = false.B; val has_cond = true.B;  val cond_type = EQ }
 object  BGT extends OP { val op = "b1101".U; val alu_op = ALUADD; val rs1 = PC;   val rs2 = Disp6; val rf_w = false.B; val mem_w = false.B; val mem_r = false.B; val has_cond = true.B;  val cond_type = GT }
 object JUMP extends OP { val op = "b1110".U; val alu_op = ALUADD; val rs1 = Zero; val rs2 = Imm9;  val rf_w = false.B; val mem_w = false.B; val mem_r = false.B; val has_cond = false.B; val cond_type = J }
