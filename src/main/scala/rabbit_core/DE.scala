@@ -68,7 +68,7 @@ class DE[M <: Module with HasIO[RegFileIO]](
     RS.id -> rs,
     One.id -> 1.U,
     Disp6.id -> inst.disp6,
-    Imm9.id -> Cat(inst.rs, inst.disp6),
+    Imm9.id -> Cat(Mux(inst.imm9(8), "b1111_111".U, "b0000_000".U), inst.imm9),
   ))
 
   def conOp(op: OP): Unit = {
@@ -143,7 +143,7 @@ object   LD extends OP { val op = "b1010".U; val alu_op = ALUADD; val rs1 = RS; 
 object   ST extends OP { val op = "b1011".U; val alu_op = ALUADD; val rs1 = RS;   val rs2 = Disp6; val rf_w = false.B; val mem_w = true.B;  val mem_r = false.B; val has_cond = false.B; val cond_type = N }
 object  BEQ extends OP { val op = "b1100".U; val alu_op = ALUADD; val rs1 = PC;   val rs2 = Disp6; val rf_w = false.B; val mem_w = false.B; val mem_r = false.B; val has_cond = true.B;  val cond_type = EQ }
 object  BGT extends OP { val op = "b1101".U; val alu_op = ALUADD; val rs1 = PC;   val rs2 = Disp6; val rf_w = false.B; val mem_w = false.B; val mem_r = false.B; val has_cond = true.B;  val cond_type = GT }
-object JUMP extends OP { val op = "b1110".U; val alu_op = ALUADD; val rs1 = Zero; val rs2 = Imm9;  val rf_w = false.B; val mem_w = false.B; val mem_r = false.B; val has_cond = false.B; val cond_type = J }
+object JUMP extends OP { val op = "b1110".U; val alu_op = ALUADD; val rs1 = PC;   val rs2 = Imm9;  val rf_w = false.B; val mem_w = false.B; val mem_r = false.B; val has_cond = false.B; val cond_type = J }
 object  NOP extends OP { val op = "b0000".U; val alu_op = ALUADD; val rs1 = Zero; val rs2 = Zero;  val rf_w = false.B; val mem_w = false.B; val mem_r = false.B; val has_cond = false.B; val cond_type = N }
 
 sealed trait CondType { val id: UInt }

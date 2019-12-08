@@ -31,6 +31,7 @@ object ImplicitInstances {
   implicit val SimpleLdIM = () => new TestSimpleLdIM
   implicit val SimpleStIM = () => new TestSimpleStIM
   implicit val SimpleJumpIM = () => new TestSimpleJumpIM
+  implicit val TestSum = () => new TestSumIM
   implicit val ConstRf = () => new ConstRF
   implicit val Rf = () => new RegFile
   implicit val Alu = () => new ALU
@@ -48,6 +49,7 @@ object ImplicitInstances {
   implicit val IfLdIM = () => new IF[TestSimpleLdIM]
   implicit val IfStIM = () => new IF[TestSimpleStIM]
   implicit val IfJumpIM = () => new IF[TestSimpleJumpIM]
+  implicit val IfTestSum = () => new IF[TestSumIM]
   implicit val DeRf = () => new DE[RegFile]
   implicit val DeConstRF = () => new DE[ConstRF]
   implicit val Ex = () => new EX[ALU]
@@ -152,6 +154,11 @@ class Tester extends ChiselFlatSpec {
     it should s"simple jump test with $backendName" in {
       Driver(() => new Hart[IF[TestSimpleJumpIM], DE[RegFile], EX[ALU], MA], backendName) {
         m => new HartSimpleJumpUnitTest(m)
+      } should be(true)
+    }
+    it should s"sum 0 to 10 test with $backendName" in {
+      Driver(() => new Hart[IF[TestSumIM], DE[RegFile], EX[ALU], MA], backendName) {
+        m => new HartSumUnitTest(m)
       } should be(true)
     }
   }

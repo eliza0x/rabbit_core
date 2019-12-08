@@ -92,10 +92,24 @@ class HartSimpleStUnitTest(hart: Hart[IF[TestSimpleStIM], DE[RegFile], EX[ALU], 
 class HartSimpleJumpUnitTest(hart: Hart[IF[TestSimpleJumpIM], DE[RegFile], EX[ALU], MA]) extends PeekPokeTester(hart) {
   for (i <- 0 until 10) {
     step(1)
-    if (i%2 == 0) {
-      expect(hart.io.out, 2)
-    } else {
-      expect(hart.io.out, 4)
-    }
+    expect(hart.io.out, 2)
+    step(1)
+    expect(hart.io.out, 4)
+    step(1)
+    expect(hart.io.out, 1)
   }
+}
+
+class HartSumUnitTest(hart: Hart[IF[TestSumIM], DE[RegFile], EX[ALU], MA]) extends PeekPokeTester(hart) {
+  val sumCnt: Int = {
+    var cnt = 3 // ldi * 3
+    var r1 = 0
+    do {
+      r1 += 1
+      cnt += 4
+    } while(r1 < 10)
+    cnt
+  }
+  step(sumCnt)
+  expect(hart.io.out, (0 to 10).sum)
 }
