@@ -38,6 +38,15 @@ class FRL2WayUnitTest(m: FreeRegisterList2Way) extends PeekPokeTester(m) {
   step(1)
   expect(m.io.reserved_prf_addr(0), 8)
   expect(m.io.reserved_prf_addr(1), 9)
+  step(1)
+  expect(m.io.reserved_prf_addr(0), 10)
+  expect(m.io.reserved_prf_addr(1), 11)
+  step(1)
+  expect(m.io.reserved_prf_addr(0), 12)
+  expect(m.io.reserved_prf_addr(1), 13)
+  step(1)
+  expect(m.io.reserved_prf_addr(0), 14)
+  expect(m.io.reserved_prf_addr(1), 15)
 }
 
 class Tester extends ChiselFlatSpec {

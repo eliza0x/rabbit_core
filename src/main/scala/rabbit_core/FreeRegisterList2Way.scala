@@ -14,18 +14,12 @@ class FreeRegisterList2Way extends Module {
     val reserved_prf_addr: Vec[UInt] = Vec(PARALLEL_WIDTH, Output(UInt(PRF.W.W)))
   })
   // val FRL_SIZE = PRF.CNT - 1
-  val FRL_SIZE = PRF.CNT
+  val FRL_SIZE = PRF.CNT + 2
+  val FRL_WIDTH = (PRF.W + 1).W
   val frl = RegInit(VecInit((0 until FRL_SIZE).map(_.U))) // 今空いているレジスタのリスト(Queue)
-  val frl_top: UInt = RegInit((FRL_SIZE-2).U(PRF.W.W)) // frl queueのtop
+  val frl_top: UInt = RegInit((FRL_SIZE-2).U(FRL_WIDTH + 1.W)) // frl queueのtop
 
   val reserved_required_cnt: UInt = io.reserve_required.count((x: Bool) => x).asUInt()
-  // .cnt methodが狙った動きをしてくれるかわからなくて恐ろしいのでデバッグプリントを仕込んでおく
-  // print(".cnt method: ")
-  // println(
-  //   io.reserve_required.count(_) ===
-  //     Mux(io.reserve_required(0), 1.U(2.W), 0.U(2.W))+Mux(io.reserve_required(1), 1.U(2.W), 0.U(2.W))
-  // )
-
   val release_required_cnt: UInt = io.release_required.count((x: Bool) => x).asUInt()
 
   // Queueの先頭n個をreserve
@@ -43,18 +37,24 @@ class FreeRegisterList2Way extends Module {
   packed_release_prf_addr(1) :=
     Mux(io.release_required(0), io.release_prf_addr(1), 0.U)
 
-  for (i <- 0 until PRF.CNT-2) {
+  for (i <- 0 until FRL_SIZE-2) {
     // こう書くことで値の取りうる範囲を明示できて良いのでは？などと考えた
     // キューのシフトと新しい要素の追加を行っている
     frl(i) := MuxCase(frl(i), Seq(
-      (i.U === frl_top)               -> packed_release_prf_addr(0),
-      (i.U === frl_top+1.U)           -> packed_release_prf_addr(1),
+      (i.U === frl_top)     -> packed_release_prf_addr(0),
+      (i.U === frl_top+1.U) -> packed_release_prf_addr(1),
       (reserved_required_cnt === 0.U) -> frl(i),
       (reserved_required_cnt === 1.U) -> frl(i+1),
       (reserved_required_cnt === 2.U) -> frl(i+2),
     ))
   }
 
-  frl_top := frl_top+release_required_cnt
+  printf("frl_top: %d, packed_release_prf_addr_0: %d, packed_release_prf_addr_1: %d, \nreg: ",
+    frl_top, packed_release_prf_addr(0), packed_release_prf_addr(1))
+  for (i <- 0 until FRL_SIZE)
+    printf("[%d]%d, ",i.U, frl(i))
+  printf("\n")
+
+  frl_top := frl_top+release_required_cnt-reserved_required_cnt
 }
 
